@@ -1,0 +1,18 @@
+public class medicamento {
+    private String nomeMed;
+    private double dosagemMg;
+
+    public medicamento (String nomeMed, double dosagemMg) {
+        this.nomeMed = nomeMed;
+        this.dosagemMg = dosagemMg;
+    }
+
+    public String getNomeMed() {
+        return nomeMed;
+    }
+
+    public double getDosagemMg() {
+        return dosagemMg;
+    }
+
+ 

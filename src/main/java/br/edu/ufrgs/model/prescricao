@@ -1,0 +1,18 @@
+public class prescricao {
+    private String nomeMed;
+    private double dosagemMg;
+
+    public prescricao (String nomeMed, double dosagemMg) {
+        this.nomeMed = nomeMed;
+        this.dosagemMg = dosagemMg;
+    }
+
+    public String getNomeMed() {
+        return nomeMed;
+    }
+
+    public double getDosagemMg() {
+        return dosagemMg;
+    }
+
+ 

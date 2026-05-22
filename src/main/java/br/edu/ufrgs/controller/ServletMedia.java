@@ -1,6 +1,6 @@
 package br.edu.ufrgs.controller;
 
-import br.edu.ufrgs.model.Aluno; // Importação do Model
+import br.edu.ufrgs.model.Paciente; // Importação do Model
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,8 +18,8 @@ public class ServletMedia extends HttpServlet {
             double nota = Double.parseDouble(request.getParameter("nota"));
 
             // Uso da classe Model
-            Aluno aluno = new Aluno(nome, nota);
-            String mensagem = aluno.getMensagemFinal();
+            Paciente paciente = new Paciente(nome, nota);
+            //String mensagem = paciente.getMensagemFinal();
 
             request.setAttribute("resultado", mensagem);
             
