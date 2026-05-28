@@ -14,19 +14,19 @@ public class ServletMedia extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            String nome = request.getParameter("nome");
-            double nota = Double.parseDouble(request.getParameter("nota"));
+            String cpf = request.getParameter("cpf");
+            double pesoKG = Double.parseDouble(request.getParameter("pesoKG"));
 
             // Uso da classe Model
-            Paciente paciente = new Paciente(nome, nota);
+            Paciente paciente = new Paciente(cpf, pesoKG);
             //String mensagem = paciente.getMensagemFinal();
 
-            request.setAttribute("resultado", mensagem);
+            //request.setAttribute("resultado", mensagem);
             
-        } catch (NumberFormatException e) {
-            request.setAttribute("resultado", "Erro: Informe uma nota válida.");
-        }
+        } //catch (NumberFormatException e) {
+          //  request.setAttribute("resultado", "Erro: Informe uma nota válida.");
+       // }
 
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+       // request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }
