@@ -1,6 +1,6 @@
 package br.edu.ufrgs.controller;
 
-import br.edu.ufrgs.model.Paciente; // Importação do Model
+import br.edu.ufrgs.model.Prescricao; // Importação do Model
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,15 +18,15 @@ public class ServletMedia extends HttpServlet {
             double pesoKG = Double.parseDouble(request.getParameter("pesoKG"));
 
             // Uso da classe Model
-            Paciente paciente = new Paciente(cpf, pesoKG);
-            //String mensagem = paciente.getMensagemFinal();
+            Prescricao prescricao = new Prescricao(cpf, pesoKG);
+            String mensagem = prescricao.getMensagemFinal();
 
-            //request.setAttribute("resultado", mensagem);
+            request.setAttribute("resultado", mensagem);
             
-        } //catch (NumberFormatException e) {
-          //  request.setAttribute("resultado", "Erro: Informe uma nota válida.");
-       // }
+        } catch (NumberFormatException e) {
+            request.setAttribute("resultado", "Erro: Informe uma nota válida.");
+        }
 
-       // request.getRequestDispatcher("index.jsp").forward(request, response);
+       request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }
