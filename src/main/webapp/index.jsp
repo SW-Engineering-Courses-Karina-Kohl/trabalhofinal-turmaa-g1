@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <body>
-    <h2>Lançamento de Notas</h2>
+    <h2>Validador de Prescrição</h2>
     <form action="processa" method="post">
         Nome: <input type="text" name="nome" required><br><br>
-        Nota: <input type="number" step="0.1" name="nota" min="0" max="10" required><br><br>
+        Peso (kg): <input type="number" step="0.1" name="peso" min="0" required><br><br>
+        Medicamento: <input type="text" name="medicamento" required><br><br>
+        Dosagem (mg): <input type="text" name="dosagem" required><br><br>
         <button type="submit">Verificar Situação</button>
     </form>
 
