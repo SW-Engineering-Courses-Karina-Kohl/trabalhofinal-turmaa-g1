@@ -1,20 +1,24 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
+<head>
+    <title>Validador de Prescrições</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        form { background: #f4f4f4; padding: 20px; border-radius: 8px; width: 500px; }
+        input[type=submit] {
+            padding: 8px 20px; background: #2c7be5; color: white;
+            border: none; cursor: pointer; border-radius: 4px;
+        }
+        h1 { color: #2c7be5; }
+    </style>
+</head>
 <body>
-    <h2>Validador de Prescrição</h2>
-    <form action="processa" method="post">
-        Nome: <input type="text" name="nome" required><br><br>
-        Peso (kg): <input type="number" step="0.1" name="peso" min="0" required><br><br>
-        Medicamento: <input type="text" name="medicamento" required><br><br>
-        Dosagem (mg): <input type="text" name="dosagem" required><br><br>
-        <button type="submit">Verificar Situação</button>
+    <h1>Validador de Prescrições Médicas</h1>
+    <form action="upload" method="post" enctype="multipart/form-data">
+        <p><b>Selecione o arquivo CSV de prescrições:</b></p>
+        <input type="file" name="file" accept=".csv" required/>
+        <br><br>
+        <input type="submit" value="Carregar e Validar"/>
     </form>
-
-    <%-- Exibe o resultado se ele existir no request --%>
-    <% if (request.getAttribute("resultado") != null) { %>
-        <hr>
-        <h3>Resultado:</h3>
-        <p><strong><%= request.getAttribute("resultado") %></strong></p>
-    <% } %>
 </body>
 </html>

@@ -8,14 +8,16 @@ public class Prescricao {
     private double peso_paciente;
     private boolean alerta_seguranca = false;
     private String motivo_alerta = "Nnenhum risco detectado";
+    private String alergia; // Campo para alergias do paciente
 
 
-    public Prescricao (String idPrescricao, String idPaciente, String medicamento, String dosagem_mg, double peso_paciente) {
+    public Prescricao (String idPrescricao, String idPaciente, String medicamento, String dosagem_mg, double peso_paciente, String alergia) {
         this.id_prescricao = idPrescricao;
         this.id_paciente = idPaciente;
         this.medicamento = medicamento;
         this.dosagem_mg = dosagem_mg;
         this.peso_paciente = peso_paciente;
+        this.alergia = alergia;
     }
 
     public String getIdPrescricao() {
@@ -43,6 +45,10 @@ public class Prescricao {
 
     public String getMotivo_alerta() {
         return motivo_alerta;
+    }
+    
+    public String getAlergia() {
+        return alergia;
     }
 
     public void ativarAlerta(String motivo) {
