@@ -1,6 +1,7 @@
 package br.edu.ufrgs.controller;
 
 import br.edu.ufrgs.model.Prescricao;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,13 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/upload")
-@MultipartConfig   //  NECESSÁRIO PARA UPLOAD DE ARQUIVO
+@MultipartConfig
 public class ServletMedia extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // ---------- LER CSV ----------
         List<Prescricao> lista = new ArrayList<>();
         Part partPresc = request.getPart("file");
 
@@ -32,7 +32,7 @@ public class ServletMedia extends HttpServlet {
                 if (linha.trim().isEmpty()) continue;
 
                 String[] campos = linha.split(",", -1);
-                String alergiaStr = (campos.length >= 6) ? campos[5].trim() : "";
+                String alergias = campos.length > 5 ? campos[5].trim() : "";
 
                 Prescricao pr = new Prescricao(
                     campos[0].trim(),
@@ -40,16 +40,14 @@ public class ServletMedia extends HttpServlet {
                     campos[2].trim(),
                     campos[3].trim(),
                     Double.parseDouble(campos[4].trim()),
-                    alergiaStr
+                    alergias
                 );
                 lista.add(pr);
             }
-        } // try-with-resources fecha sozinho, não precisa de br.close()
+        }
 
-        // ---------- APLICAR REGRAS ----------
         aplicarRegrasSeguranca(lista);
 
-        // ---------- ENVIAR PARA JSP ----------
         request.getSession().setAttribute("prescricoes", lista);
         request.setAttribute("prescricoes", lista);
         request.getRequestDispatcher("Resultado.jsp").forward(request, response);
@@ -73,22 +71,22 @@ public class ServletMedia extends HttpServlet {
 
         // REGRA 2 — Peso < 20kg e dosagem > 500mg
         for (Prescricao p : lista) {
-            // remove "mg" da string e converte para número
             int dose = Integer.parseInt(p.getDosagem_mg().replaceAll("[^0-9]", ""));
             if (p.getPeso_paciente() < 20 && dose > 500) {
-                p.ativarAlerta("Dosagem alta para paciente com peso inferior a 20kg.");
+                p.ativarAlerta("Dosagem Alta para Peso Infantil");
             }
         }
 
-        // REGRA 3 — Alergia (vem do próprio CSV)
+        // REGRA 3 — Paciente alergico ao medicamento prescrito
         for (Prescricao p : lista) {
-            String alergiasStr = p.getAlergia();
-            if (alergiasStr != null && !alergiasStr.isEmpty()) {
-                String[] alergias = alergiasStr.split(";");
-                for (String medAlergico : alergias) {
-                    if (medAlergico.trim().equalsIgnoreCase(p.getMedicamento())) {
-                        p.ativarAlerta("Alergia do Paciente ao " + p.getMedicamento());
-                    }
+            String alergias = p.getAlergias();
+            if (alergias == null || alergias.isEmpty()) continue;
+
+            String[] listaAlergias = alergias.split(";");
+            for (String alergia : listaAlergias) {
+                if (alergia.trim().equalsIgnoreCase(p.getMedicamento())) {
+                    p.ativarAlerta("Paciente Alergico a " + p.getMedicamento());
+                    break;
                 }
             }
         }

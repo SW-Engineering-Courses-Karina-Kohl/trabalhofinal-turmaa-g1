@@ -1,10 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List, br.edu.ufrgs.model.Prescricao" %>
 <%
+    @SuppressWarnings("unchecked")
     List<Prescricao> lista = (List<Prescricao>) request.getAttribute("prescricoes");
-    if (lista == null) {
-        lista = (List<Prescricao>) request.getSession().getAttribute("prescricoes");
-    }
 %>
 <!DOCTYPE html>
 <html>
@@ -16,14 +14,6 @@
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #333; padding: 8px; text-align: center; }
         th { background: #2c7be5; color: white; }
-
-        /* destaque para linhas com risco */
-        tr.alerta td {
-            background-color: #ff6b6b !important;
-            color: white;
-            font-weight: bold;
-        }
-
         a {
             display: inline-block; margin-top: 15px; margin-right: 10px;
             padding: 8px 15px; background: #2c7be5; color: white;
@@ -41,18 +31,22 @@
             <th>medicamento</th>
             <th>dosagem_mg</th>
             <th>peso_paciente</th>
+            <th>alergias</th>
             <th>alerta_seguranca</th>
             <th>motivo_alerta</th>
         </tr>
-        <% for (Prescricao p : lista) { 
-               String classe = p.isAlerta_seguranca() ? "alerta" : "";
+        <% for (Prescricao p : lista) {
+               String estilo = p.isAlerta_seguranca()
+                   ? "background-color:#ff4d4d; color:white; font-weight:bold;"
+                   : "";
         %>
-            <tr class="<​%= classe %>">
+            <tr style="<​%= estilo %>">
                 <td><%= p.getIdPrescricao() %></td>
                 <td><%= p.getIdPaciente() %></td>
                 <td><%= p.getMedicamento() %></td>
                 <td><%= p.getDosagem_mg() %></td>
                 <td><%= p.getPeso_paciente() %></td>
+                <td><%= p.getAlergias() %></td>
                 <td><%= p.isAlerta_seguranca() %></td>
                 <td><%= p.getMotivo_alerta() %></td>
             </tr>

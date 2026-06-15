@@ -14,6 +14,7 @@ import java.util.List;
 @WebServlet("/exportar")
 public class ExportarServlet extends HttpServlet {
 
+    @SuppressWarnings("unchecked")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         List<Prescricao> lista = (List<Prescricao>) request.getSession().getAttribute("prescricoes");
@@ -26,7 +27,7 @@ public class ExportarServlet extends HttpServlet {
         response.setHeader("Content-Disposition", "attachment; filename=prescricoes_auditadas.csv");
 
         PrintWriter pw = response.getWriter();
-        pw.println("id_prescricao,id_paciente,medicamento,dosagem_mg,peso_paciente,alerta_seguranca,motivo_alerta");
+        pw.println("id_prescricao,id_paciente,medicamento,dosagem_mg,peso_paciente,alergias,alerta_seguranca,motivo_alerta");
 
         for (Prescricao p : lista) {
             pw.println(
@@ -35,6 +36,7 @@ public class ExportarServlet extends HttpServlet {
                 p.getMedicamento()     + "," +
                 p.getDosagem_mg()      + "," +
                 p.getPeso_paciente()   + "," +
+                p.getAlergias()        + "," +
                 p.isAlerta_seguranca() + "," +
                 p.getMotivo_alerta()
             );
