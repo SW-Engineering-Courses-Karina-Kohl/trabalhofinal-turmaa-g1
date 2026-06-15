@@ -31,8 +31,8 @@ public class ServletMedia extends HttpServlet {
             while ((linha = br.readLine()) != null) {
                 if (linha.trim().isEmpty()) continue;
 
-                String[] campos = linha.split(",", -1);
-                String alergias = campos.length > 5 ? campos[5].trim() : "";
+                String[] campos = linha.split(",", -1); // -1 para ignorar se a ultima colunas estiver vazia
+                String alergias = campos.length > 5 ? campos[5].trim() : ""; // campo de alergias opcional
 
                 Prescricao pr = new Prescricao(
                     campos[0].trim(),
@@ -55,29 +55,29 @@ public class ServletMedia extends HttpServlet {
 
     private void aplicarRegrasSeguranca(List<Prescricao> lista) {
 
-        // REGRA 1 — Varfarina + Aspirina no mesmo paciente
+        // REGRA 1 — varfarina + aspirina no mesmo paciente
         for (Prescricao a : lista) {
             for (Prescricao b : lista) {
                 if (a != b && a.getIdPaciente().equals(b.getIdPaciente())) {
                     String medA = a.getMedicamento();
                     String medB = b.getMedicamento();
-                    if ((medA.equalsIgnoreCase("Varfarina") && medB.equalsIgnoreCase("Aspirina"))
-                     || (medA.equalsIgnoreCase("Aspirina")  && medB.equalsIgnoreCase("Varfarina"))) {
-                        a.ativarAlerta("Interacao Perigosa (Varfarina + Aspirina)");
+                    if ((medA.equalsIgnoreCase("varfarina") && medB.equalsIgnoreCase("aspirina"))
+                     || (medA.equalsIgnoreCase("aspirina")  && medB.equalsIgnoreCase("varfarina"))) {
+                        a.ativarAlerta("interacao perigosa (varfarina + aspirina)");
                     }
                 }
             }
         }
 
-        // REGRA 2 — Peso < 20kg e dosagem > 500mg
+        // REGRA 2 — peso 20kg e dosagem 500mg
         for (Prescricao p : lista) {
             int dose = Integer.parseInt(p.getDosagem_mg().replaceAll("[^0-9]", ""));
             if (p.getPeso_paciente() < 20 && dose > 500) {
-                p.ativarAlerta("Dosagem Alta para Peso Infantil");
+                p.ativarAlerta("dosagem alta para o peso do paciente");
             }
         }
 
-        // REGRA 3 — Paciente alergico ao medicamento prescrito
+        // REGRA 3 — paciente alergico
         for (Prescricao p : lista) {
             String alergias = p.getAlergias();
             if (alergias == null || alergias.isEmpty()) continue;
@@ -85,7 +85,7 @@ public class ServletMedia extends HttpServlet {
             String[] listaAlergias = alergias.split(";");
             for (String alergia : listaAlergias) {
                 if (alergia.trim().equalsIgnoreCase(p.getMedicamento())) {
-                    p.ativarAlerta("Paciente Alergico a " + p.getMedicamento());
+                    p.ativarAlerta("paciente alergico a " + p.getMedicamento());
                     break;
                 }
             }

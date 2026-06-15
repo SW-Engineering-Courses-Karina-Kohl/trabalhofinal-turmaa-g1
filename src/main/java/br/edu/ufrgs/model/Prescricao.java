@@ -20,14 +20,37 @@ public class Prescricao {
         this.alergias = alergias;
     }
 
-    public String getIdPrescricao()     { return id_prescricao; }
-    public String getIdPaciente()       { return id_paciente; }
-    public String getMedicamento()      { return medicamento; }
-    public String getDosagem_mg()       { return dosagem_mg; }
-    public double getPeso_paciente()    { return peso_paciente; }
-    public String getAlergias()         { return alergias; }
-    public boolean isAlerta_seguranca() { return alerta_seguranca; }
-    public String getMotivo_alerta()    { return motivo_alerta; }
+    public String getIdPrescricao() { 
+        return id_prescricao; 
+    }
+
+    public String getIdPaciente()   {
+        return id_paciente; 
+    }
+
+    public String getMedicamento()  {
+        return medicamento; 
+    }
+
+    public String getDosagem_mg()   {
+        return dosagem_mg; 
+    }
+
+    public double getPeso_paciente()    {
+        return peso_paciente;
+    }
+
+    public String getAlergias() {
+        return alergias; 
+    }
+
+    public boolean isAlerta_seguranca() {
+        return alerta_seguranca; 
+    }
+
+    public String getMotivo_alerta()    {
+        return motivo_alerta; 
+    }
 
     public void ativarAlerta(String motivo) {
         this.alerta_seguranca = true;
