@@ -1,32 +1,94 @@
 package br.edu.ufrgs.controller;
 
-import br.edu.ufrgs.model.Aluno; // Importação do Model
+import br.edu.ufrgs.model.Prescricao;
+
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
-@WebServlet("/processa")
+@WebServlet("/upload")
+@MultipartConfig
 public class ServletMedia extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        try {
-            String nome = request.getParameter("nome");
-            double nota = Double.parseDouble(request.getParameter("nota"));
 
-            // Uso da classe Model
-            Aluno aluno = new Aluno(nome, nota);
-            String mensagem = aluno.getMensagemFinal();
+        List<Prescricao> lista = new ArrayList<>();
+        Part partPresc = request.getPart("file");
 
-            request.setAttribute("resultado", mensagem);
-            
-        } catch (NumberFormatException e) {
-            request.setAttribute("resultado", "Erro: Informe uma nota válida.");
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(partPresc.getInputStream()))) {
+            String linha = br.readLine(); // pula cabeçalho
+            while ((linha = br.readLine()) != null) {
+                if (linha.trim().isEmpty()) continue;
+
+                String[] campos = linha.split(",", -1); // -1 para ignorar se a ultima colunas estiver vazia
+                String alergias = campos.length > 5 ? campos[5].trim() : ""; // campo de alergias opcional
+
+                Prescricao pr = new Prescricao(
+                    campos[0].trim(),
+                    campos[1].trim(),
+                    campos[2].trim(),
+                    campos[3].trim(),
+                    Double.parseDouble(campos[4].trim()),
+                    alergias
+                );
+                lista.add(pr);
+            }
         }
 
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+        aplicarRegrasSeguranca(lista);
+
+        request.getSession().setAttribute("prescricoes", lista);
+        request.setAttribute("prescricoes", lista);
+        request.getRequestDispatcher("Resultado.jsp").forward(request, response);
+    }
+
+    private void aplicarRegrasSeguranca(List<Prescricao> lista) {
+
+        // REGRA 1 — varfarina + aspirina no mesmo paciente
+        for (Prescricao a : lista) {
+            for (Prescricao b : lista) {
+                if (a != b && a.getIdPaciente().equals(b.getIdPaciente())) {
+                    String medA = a.getMedicamento();
+                    String medB = b.getMedicamento();
+                    if ((medA.equalsIgnoreCase("varfarina") && medB.equalsIgnoreCase("aspirina"))
+                     || (medA.equalsIgnoreCase("aspirina")  && medB.equalsIgnoreCase("varfarina"))) {
+                        a.ativarAlerta("interacao perigosa (varfarina + aspirina)");
+                    }
+                }
+            }
+        }
+
+        // REGRA 2 — peso 20kg e dosagem 500mg
+        for (Prescricao p : lista) {
+            int dose = Integer.parseInt(p.getDosagem_mg().replaceAll("[^0-9]", ""));
+            if (p.getPeso_paciente() < 20 && dose > 500) {
+                p.ativarAlerta("dosagem alta para o peso do paciente");
+            }
+        }
+
+        // REGRA 3 — paciente alergico
+        for (Prescricao p : lista) {
+            String alergias = p.getAlergias();
+            if (alergias == null || alergias.isEmpty()) continue;
+
+            String[] listaAlergias = alergias.split(";");
+            for (String alergia : listaAlergias) {
+                if (alergia.trim().equalsIgnoreCase(p.getMedicamento())) {
+                    p.ativarAlerta("paciente alergico a " + p.getMedicamento());
+                    break;
+                }
+            }
+        }
     }
 }
